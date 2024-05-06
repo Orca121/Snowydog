@@ -1,8 +1,9 @@
 # Snowydog
-**一个mini-tomcat**
+**一个mini-tomcat - 廖雪峰老师的Jerrymouse**
 
 - 仅一个HTTP Connector，不支持HTTPS；
 - 仅支持挂载到`/`的一个Context，不支持多个Host与多个Context。
+- 基于Servlet 6.0规范
 
 因为只有一个Context，所以也只能有一个Web App。Jerrymouse Server的架构如下：
 
@@ -20,11 +21,11 @@
 
 - 要运行多个Web App怎么办？
 
-运行多个Jerrymouse Server就可以运行多个Web App了。
+运行多个Snowydog Server就可以运行多个Web App了。
 
 - 只支持HTTP，如果一定要使用HTTPS怎么办？
 
-HTTPS可以部署在网关，通过网关将HTTPS请求转发为HTTP请求给Jerrymouse Server即可。部署一个Nginx就可以充当网关：
+HTTPS可以部署在网关，通过网关将HTTPS请求转发为HTTP请求给Snowydog Server即可。部署一个Nginx就可以充当网关：
 
 ```ascii
                ┌───────────────────────────────┐

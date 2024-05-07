@@ -5,7 +5,18 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="a488f7a6-f197-4563-8459-f464242d5f4e" name="Changes" comment="feat: step one - a simple http server">
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/orcaswater/snowydog/SimpleHttpServer.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/orcaswater/snowydog/SimpleHttpServer.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/com/orcaswater/snowydog/Start.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/com/orcaswater/snowydog/connector/HttpConnector.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/com/orcaswater/snowydog/connector/HttpExchangeAdapter.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/com/orcaswater/snowydog/connector/HttpExchangeRequest.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/com/orcaswater/snowydog/connector/HttpExchangeResponse.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/com/orcaswater/snowydog/engine/HttpServletRequestImpl.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/com/orcaswater/snowydog/engine/HttpServletResponseImpl.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/.name" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.name" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/compiler.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/compiler.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/modules.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/pom.xml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -15,6 +26,7 @@
   <component name="FileTemplateManagerImpl">
     <option name="RECENT_TEMPLATES">
       <list>
+        <option value="Interface" />
         <option value="Class" />
       </list>
     </option>
@@ -67,7 +79,7 @@
     "git-widget-placeholder": "dev",
     "jdk.selected.JAVA_MODULE": "openjdk-21",
     "last_opened_file_path": "D:/Code/Project/Snowydog",
-    "project.structure.last.edited": "Modules",
+    "project.structure.last.edited": "Facets",
     "project.structure.proportion": "0.15",
     "project.structure.side.proportion": "0.2",
     "settings.editor.selected.configurable": "editing.templates"
@@ -84,10 +96,23 @@
       <recent name="com.orcaswater.snowydog" />
     </key>
   </component>
-  <component name="RunManager">
+  <component name="RunManager" selected="Application.Start">
     <configuration name="SimpleHttpServer" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
       <option name="MAIN_CLASS_NAME" value="com.orcaswater.snowydog.SimpleHttpServer" />
       <module name="Snowydog" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="com.orcaswater.snowydog.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="Start" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
+      <option name="MAIN_CLASS_NAME" value="com.orcaswater.snowydog.Start" />
+      <module name="snowydog-server" />
       <extension name="coverage">
         <pattern>
           <option name="PATTERN" value="com.orcaswater.snowydog.*" />
@@ -143,22 +168,9 @@
       <option name="ADD_SOURCE_ROOTS" value="true" />
       <method v="2" />
     </configuration>
-    <configuration default="true" type="tests" factoryName="Autodetect">
-      <module name="Snowydog" />
-      <option name="INTERPRETER_OPTIONS" value="" />
-      <option name="PARENT_ENVS" value="true" />
-      <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="" />
-      <option name="IS_MODULE_SDK" value="false" />
-      <option name="ADD_CONTENT_ROOTS" value="true" />
-      <option name="ADD_SOURCE_ROOTS" value="true" />
-      <option name="_new_additionalArguments" value="&quot;&quot;" />
-      <option name="_new_target" value="&quot;&quot;" />
-      <option name="_new_targetType" value="&quot;PATH&quot;" />
-      <method v="2" />
-    </configuration>
     <recent_temporary>
       <list>
+        <item itemvalue="Application.Start" />
         <item itemvalue="Application.SimpleHttpServer" />
       </list>
     </recent_temporary>
@@ -196,7 +208,15 @@
       <option name="project" value="LOCAL" />
       <updated>1715006391859</updated>
     </task>
-    <option name="localTasksCounter" value="4" />
+    <task id="LOCAL-00004" summary="feat: step one - a simple http server">
+      <option name="closed" value="true" />
+      <created>1715006569100</created>
+      <option name="number" value="00004" />
+      <option name="presentableId" value="LOCAL-00004" />
+      <option name="project" value="LOCAL" />
+      <updated>1715006569100</updated>
+    </task>
+    <option name="localTasksCounter" value="5" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">

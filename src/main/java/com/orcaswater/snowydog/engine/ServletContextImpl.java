@@ -1,8 +1,10 @@
 package com.orcaswater.snowydog.engine;
 
 import com.orcaswater.snowydog.engine.mapping.ServletMapping;
+import com.orcaswater.snowydog.engine.mapping.FilterMapping;
 import com.orcaswater.snowydog.utils.AnnoUtils;
 import jakarta.servlet.*;
+import jakarta.servlet.annotation.WebFilter;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.descriptor.JspConfigDescriptor;
 import jakarta.servlet.http.HttpServletRequest;
@@ -31,43 +33,49 @@ import java.util.*;
 public class ServletContextImpl implements ServletContext {
     final Logger logger = LoggerFactory.getLogger(getClass());
 
-    private Map<String, ServletRegistrationImpl> servletRegistrations = new HashMap<>();
+    final Map<String, ServletRegistrationImpl> servletRegistrations = new HashMap<>();
+    final Map<String, FilterRegistrationImpl> filterRegistrations = new HashMap<>();
 
     final Map<String, Servlet> nameToServlets = new HashMap<>();
+    final Map<String, Filter> nameToFilters = new HashMap<>();
 
     final List<ServletMapping> servletMappings = new ArrayList<>();
+    final List<FilterMapping> filterMappings = new ArrayList<>();
 
     /**
-     * @param request:
-     * @param response:
+     * @param filterClasses:
      * @return void
      * @author: orca121
-     * @description: 处理Servlet
-     * @createTime: 2024/5/7 12:07
+     * @description: 向容器添加Filter
+     * @createTime: 2024/5/7 16:25
      */
-    public void process(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
-        // 请求路径:
-        String path = request.getRequestURI();
-        // 搜索Servlet:
-        Servlet servlet = null;
-        for (ServletMapping mapping : this.servletMappings) {
-            if (mapping.matches(path)) {
-                // 路径匹配:
-                servlet = mapping.servlet;
-                break;
+    public void initFilters(List<Class<?>> filterClasses) {
+        for (Class<?> c : filterClasses) {
+            WebFilter wf = c.getAnnotation(WebFilter.class);
+            if (wf != null) {
+                logger.info("auto register @WebFilter: {}", c.getName());
+                @SuppressWarnings("unchecked")
+                Class<? extends Filter> clazz = (Class<? extends Filter>) c;
+                FilterRegistration.Dynamic registration = this.addFilter(AnnoUtils.getFilterName(clazz), clazz);
+                registration.addMappingForUrlPatterns(EnumSet.of(DispatcherType.REQUEST), true, AnnoUtils.getFilterUrlPatterns(clazz));
+                registration.setInitParameters(AnnoUtils.getFilterInitParams(clazz));
             }
         }
 
-        if (servlet == null) {
-            // 未匹配到任何Servlet显示404 Not Found:
-            PrintWriter pw = response.getWriter();
-            pw.write("<h1>404 Not Found</h1><p>No mapping for URL: " + path + "</p>");
-            pw.close();
-            return;
+        // init filters:
+        for (String name : this.filterRegistrations.keySet()) {
+            var registration = this.filterRegistrations.get(name);
+            try {
+                registration.filter.init(registration.getFilterConfig());
+                this.nameToFilters.put(name, registration.filter);
+                for (String urlPattern : registration.getUrlPatternMappings()) {
+                    this.filterMappings.add(new FilterMapping(urlPattern, registration.filter));
+                }
+                registration.initialized = true;
+            } catch (ServletException e) {
+                logger.error("init filter failed: " + name + " / " + registration.filter.getClass().getName(), e);
+            }
         }
-
-        // 由Servlet继续处理请求:
-        servlet.service(request, response);
     }
 
     /**
@@ -77,7 +85,7 @@ public class ServletContextImpl implements ServletContext {
      * @description: 初始化Servlet, 添加Servlet
      * @createTime: 2024/5/7 12:08
      */
-    public void initialize(List<Class<?>> servletClasses) {
+    public void initServlets(List<Class<?>> servletClasses) {
         for (Class<?> c : servletClasses) {
             WebServlet ws = c.getAnnotation(WebServlet.class);
             if (ws != null) {
@@ -90,7 +98,7 @@ public class ServletContextImpl implements ServletContext {
             }
         }
 
-        // 初始化 servlets:
+        // init servlets:
         for (String name : this.servletRegistrations.keySet()) {
             var registration = this.servletRegistrations.get(name);
             try {
@@ -104,8 +112,55 @@ public class ServletContextImpl implements ServletContext {
                 logger.error("init servlet failed: " + name + " / " + registration.servlet.getClass().getName(), e);
             }
         }
-        // important: sort mappings:
-        Collections.sort(this.servletMappings);
+    }
+
+    /**
+     * @param request:
+     * @param response:
+     * @return void
+     * @author: orca121
+     * @description: 处理Servlet
+     * @createTime: 2024/5/7 12:07
+     */
+    public void process(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
+        String path = request.getRequestURI();
+
+        // 搜索 servlet:
+        Servlet servlet = null;
+        for (ServletMapping mapping : this.servletMappings) {
+            if (mapping.matches(path)) {
+                servlet = mapping.servlet;
+                break;
+            }
+        }
+        if (servlet == null) {
+            // 404 Not Found:
+            PrintWriter pw = response.getWriter();
+            pw.write("<h1>404 Not Found</h1><p>No mapping for URL: " + path + "</p>");
+            pw.close();
+            return;
+        }
+
+        // 搜索 filter:
+        List<Filter> enabledFilters = new ArrayList<>();
+        for (FilterMapping mapping : this.filterMappings) {
+            if (mapping.matches(path)) {
+                enabledFilters.add(mapping.filter);
+            }
+        }
+        Filter[] filters = enabledFilters.toArray(Filter[]::new);
+        logger.atDebug().log("process {} by filter {}, servlet {}", path, Arrays.toString(filters), servlet);
+        FilterChain chain = new FilterChainImpl(filters, servlet);
+
+        try {
+            chain.doFilter(request, response);
+        } catch (ServletException e) {
+            logger.error(e.getMessage(), e);
+            throw new IOException(e);
+        } catch (IOException e) {
+            logger.error(e.getMessage(), e);
+            throw e;
+        }
     }
 
     @Override
@@ -312,22 +367,50 @@ public class ServletContextImpl implements ServletContext {
         return null;
     }
 
+
+    // 根据Class Name添加Filter:
     @Override
-    public FilterRegistration.Dynamic addFilter(String filterName, String className) {
-        // TODO Auto-generated method stub
-        return null;
+    public FilterRegistration.Dynamic addFilter(String name, String className) {
+        if (className == null || className.isEmpty()) {
+            throw new IllegalArgumentException("class name is null or empty.");
+        }
+        Filter filter = null;
+        try {
+            Class<? extends Filter> clazz = createInstance(className);
+            filter = createInstance(clazz);
+        } catch (ServletException e) {
+            throw new RuntimeException(e);
+        }
+        return addFilter(name, filter);
     }
 
+    // 根据Class添加Filter:
     @Override
-    public FilterRegistration.Dynamic addFilter(String filterName, Filter filter) {
-        // TODO Auto-generated method stub
-        return null;
+    public FilterRegistration.Dynamic addFilter(String name, Class<? extends Filter> clazz) {
+        if (clazz == null) {
+            throw new IllegalArgumentException("class is null.");
+        }
+        Filter filter = null;
+        try {
+            filter = createInstance(clazz);
+        } catch (ServletException e) {
+            throw new RuntimeException(e);
+        }
+        return addFilter(name, filter);
     }
 
+    // 根据Filter实例添加Filter:
     @Override
-    public FilterRegistration.Dynamic addFilter(String filterName, Class<? extends Filter> filterClass) {
-        // TODO Auto-generated method stub
-        return null;
+    public FilterRegistration.Dynamic addFilter(String name, Filter filter) {
+        if (name == null) {
+            throw new IllegalArgumentException("name is null.");
+        }
+        if (filter == null) {
+            throw new IllegalArgumentException("filter is null.");
+        }
+        var registration = new FilterRegistrationImpl(this, name, filter);
+        this.filterRegistrations.put(name, registration);
+        return registration;
     }
 
     @Override

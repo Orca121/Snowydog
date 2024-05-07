@@ -7,7 +7,7 @@ import java.util.regex.Pattern;
  * @package: com.orcaswater.snowydog.engine.mapping
  * @className: AbstractMapping
  * @author: Orca121
- * @description: AbstractMapping for ServletMapping
+ * @description: 抽象类，持有正则表达式，url等
  * @createTime: 2024-05-07 11:57
  * @version: 1.0
  */

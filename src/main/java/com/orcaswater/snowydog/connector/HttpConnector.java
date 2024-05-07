@@ -1,6 +1,8 @@
 package com.orcaswater.snowydog.connector;
 
 import com.orcaswater.snowydog.engine.ServletContextImpl;
+import com.orcaswater.snowydog.engine.filter.LogFilter;
+import com.orcaswater.snowydog.engine.filter.HelloFilter;
 import com.orcaswater.snowydog.engine.servlet.HelloServlet;
 import com.orcaswater.snowydog.engine.servlet.IndexServlet;
 import com.sun.net.httpserver.HttpExchange;
@@ -17,6 +19,7 @@ import org.slf4j.LoggerFactory;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.InetSocketAddress;
+import java.time.Duration;
 import java.util.List;
 
 /**
@@ -36,12 +39,16 @@ public class HttpConnector implements HttpHandler, AutoCloseable {
     final ServletContextImpl servletContext;
     final HttpServer httpServer;
 
+    final Duration stopDelay = Duration.ofSeconds(5);
+
     public HttpConnector() throws IOException {
         // 创建ServletContext:
         this.servletContext = new ServletContextImpl();
-        // 初始化Servlet:
-        this.servletContext.initialize(List.of(IndexServlet.class, HelloServlet.class));
-
+        // 初始化Servlet(目前还是硬编码加载Servlet):
+        this.servletContext.initServlets(List.of(IndexServlet.class, HelloServlet.class));
+        // 初始化Filter
+        this.servletContext.initFilters(List.of(LogFilter.class, HelloFilter.class));
+        // 开启服务器
         String host = "0.0.0.0";
         int port = 8080;
         this.httpServer = HttpServer.create(new InetSocketAddress(host, port), 0, "/", this);
@@ -91,6 +98,6 @@ public class HttpConnector implements HttpHandler, AutoCloseable {
 
     @Override
     public void close() throws Exception {
-        this.httpServer.stop(3);
+        this.httpServer.stop((int) this.stopDelay.toSeconds());
     }
 }

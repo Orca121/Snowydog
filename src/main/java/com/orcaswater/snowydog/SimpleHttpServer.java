@@ -25,7 +25,7 @@ import java.time.LocalDateTime;
  * @createTime: 2024-05-06 22:21
  * @version: 1.0
  */
-
+@Deprecated
 public class SimpleHttpServer implements HttpHandler, AutoCloseable{
 
     final Logger logger = LoggerFactory.getLogger(getClass());

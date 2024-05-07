@@ -4,19 +4,24 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="a488f7a6-f197-4563-8459-f464242d5f4e" name="Changes" comment="feat: step two - a simple servlet server">
-      <change afterPath="$PROJECT_DIR$/src/main/java/com/orcaswater/snowydog/engine/ServletContextImpl.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/com/orcaswater/snowydog/engine/ServletRegistrationImpl.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/com/orcaswater/snowydog/engine/mapping/AbstractMapping.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/com/orcaswater/snowydog/engine/mapping/ServletMapping.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/com/orcaswater/snowydog/engine/servlet/HelloServlet.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/com/orcaswater/snowydog/engine/servlet/IndexServlet.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/com/orcaswater/snowydog/utils/AnnoUtils.java" afterDir="false" />
+    <list default="true" id="a488f7a6-f197-4563-8459-f464242d5f4e" name="Changes" comment="feat: step three - servlet context support">
+      <change afterPath="$PROJECT_DIR$/src/main/java/com/orcaswater/snowydog/engine/FilterChainImpl.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/com/orcaswater/snowydog/engine/FilterRegistrationImpl.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/com/orcaswater/snowydog/engine/filter/HelloFilter.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/com/orcaswater/snowydog/engine/filter/LogFilter.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/com/orcaswater/snowydog/engine/mapping/FilterMapping.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/com/orcaswater/snowydog/engine/support/InitParameters.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/com/orcaswater/snowydog/engine/support/LazyMap.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/com/orcaswater/snowydog/engine/support/Parameters.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/com/orcaswater/snowydog/utils/HttpUtils.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/pom.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/orcaswater/snowydog/Start.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/orcaswater/snowydog/Start.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/orcaswater/snowydog/SimpleHttpServer.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/orcaswater/snowydog/SimpleHttpServer.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/com/orcaswater/snowydog/connector/HttpConnector.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/orcaswater/snowydog/connector/HttpConnector.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/orcaswater/snowydog/engine/HttpServletRequestImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/orcaswater/snowydog/engine/HttpServletRequestImpl.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/orcaswater/snowydog/connector/HttpExchangeAdapter.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/orcaswater/snowydog/connector/HttpExchangeAdapter.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/orcaswater/snowydog/connector/HttpExchangeRequest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/orcaswater/snowydog/connector/HttpExchangeRequest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/orcaswater/snowydog/engine/ServletContextImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/orcaswater/snowydog/engine/ServletContextImpl.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/orcaswater/snowydog/engine/mapping/AbstractMapping.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/orcaswater/snowydog/engine/mapping/AbstractMapping.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/orcaswater/snowydog/SimpleHttpServer.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/orcaswater/snowydog/SimpleHttpServer.class" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -243,7 +248,15 @@
       <option name="project" value="LOCAL" />
       <updated>1715052918576</updated>
     </task>
-    <option name="localTasksCounter" value="8" />
+    <task id="LOCAL-00008" summary="feat: step three - servlet context support">
+      <option name="closed" value="true" />
+      <created>1715066458069</created>
+      <option name="number" value="00008" />
+      <option name="presentableId" value="LOCAL-00008" />
+      <option name="project" value="LOCAL" />
+      <updated>1715066458069</updated>
+    </task>
+    <option name="localTasksCounter" value="9" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -260,7 +273,8 @@
   <component name="VcsManagerConfiguration">
     <MESSAGE value="feat: step one - a simple http server" />
     <MESSAGE value="feat: step two - a simple servlet server" />
-    <option name="LAST_COMMIT_MESSAGE" value="feat: step two - a simple servlet server" />
+    <MESSAGE value="feat: step three - servlet context support" />
+    <option name="LAST_COMMIT_MESSAGE" value="feat: step three - servlet context support" />
   </component>
   <component name="XSLT-Support.FileAssociations.UIState">
     <expand />

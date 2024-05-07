@@ -33,6 +33,7 @@ import java.util.*;
 public class ServletContextImpl implements ServletContext {
     final Logger logger = LoggerFactory.getLogger(getClass());
 
+    final SessionManager sessionManager = new SessionManager(this, 600);
     final Map<String, ServletRegistrationImpl> servletRegistrations = new HashMap<>();
     final Map<String, FilterRegistrationImpl> filterRegistrations = new HashMap<>();
 

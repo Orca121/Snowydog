@@ -1,12 +1,13 @@
 package com.orcaswater.snowydog.engine;
 
 import com.orcaswater.snowydog.connector.HttpExchangeRequest;
+import com.orcaswater.snowydog.engine.support.HttpHeaders;
+import com.orcaswater.snowydog.engine.support.Parameters;
+import com.orcaswater.snowydog.utils.HttpUtils;
 import jakarta.servlet.*;
 import jakarta.servlet.http.*;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.UnsupportedEncodingException;
+import java.io.*;
 import java.net.URI;
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
@@ -26,20 +27,25 @@ import java.util.regex.Pattern;
 
 public class HttpServletRequestImpl implements HttpServletRequest {
 
+    final ServletContextImpl servletContext;
     final HttpExchangeRequest exchangeRequest;
+    final HttpServletResponse response;
+    final HttpHeaders headers;
+    final Parameters parameters;
 
-    public HttpServletRequestImpl(HttpExchangeRequest exchangeRequest) {
+    Boolean inputCalled = null;
+
+    public HttpServletRequestImpl(ServletContextImpl servletContext, HttpExchangeRequest exchangeRequest, HttpServletResponse response) {
+        this.servletContext = servletContext;
         this.exchangeRequest = exchangeRequest;
+        this.response = response;
+        this.headers = new HttpHeaders(exchangeRequest.getRequestHeaders());
+        this.parameters = new Parameters(exchangeRequest, "UTF-8");
     }
 
     @Override
     public String getParameter(String name) {
-        String query = this.exchangeRequest.getRequestURI().getRawQuery();
-        if (query != null) {
-            Map<String, String> params = parseQuery(query);
-            return params.get(name);
-        }
-        return null;
+        return this.parameters.getParameter(name);
     }
 
     Map<String, String> parseQuery(String query) {
@@ -59,8 +65,136 @@ public class HttpServletRequestImpl implements HttpServletRequest {
         return map;
     }
 
-    // not implemented yet:
+    @Override
+    public String getMethod() {
+        return exchangeRequest.getRequestMethod();
+    }
 
+    @Override
+    public String getRequestURI() {
+        return this.exchangeRequest.getRequestURI().getPath();
+    }
+
+
+    @Override
+    public HttpSession getSession(boolean create) {
+        String sessionId = null;
+        // 获取所有Cookie:
+        Cookie[] cookies = getCookies();
+        if (cookies != null) {
+            // 查找JSESSIONID:
+            for (Cookie cookie : cookies) {
+                if ("JSESSIONID".equals(cookie.getName())) {
+                    // 拿到Session ID:
+                    sessionId = cookie.getValue();
+                    break;
+                }
+            }
+        }
+        // 未获取到SessionID，且create=false，返回null:
+        if (sessionId == null && !create) {
+            return null;
+        }
+        // 未获取到SessionID，但create=true，创建新的Session:
+        if (sessionId == null) {
+            // 如果Header已经发送，则无法创建Session，因为无法添加Cookie:
+            if (this.response.isCommitted()) {
+                throw new IllegalStateException("Cannot create session for response is commited.");
+            }
+            // 创建随机字符串作为SessionID:
+            sessionId = UUID.randomUUID().toString();
+            // 构造一个名为JSESSIONID的Cookie:
+            String cookieValue = "JSESSIONID=" + sessionId + "; Path=/; SameSite=Strict; HttpOnly";
+            // 添加到HttpServletResponse的Header:
+            this.response.addHeader("Set-Cookie", cookieValue);
+        }
+        // 返回一个Session对象:
+        return this.servletContext.sessionManager.getSession(sessionId);
+    }
+
+    /**
+     * @param :
+     * @return HttpSession
+     * @author: orca121
+     * @description: 默认true
+     * @createTime: 2024/5/7 19:37
+     */
+    @Override
+    public HttpSession getSession() {
+        return getSession(true);
+    }
+
+    @Override
+    public boolean isRequestedSessionIdValid() {
+        return false;
+    }
+
+    @Override
+    public boolean isRequestedSessionIdFromCookie() {
+        return true;
+    }
+
+    @Override
+    public boolean isRequestedSessionIdFromURL() {
+        return false;
+    }
+
+    @Override
+    public Cookie[] getCookies() {
+        String cookieValue = this.getHeader("Cookie");
+        return HttpUtils.parseCookies(cookieValue);
+    }
+
+    @Override
+    public ServletInputStream getInputStream() throws IOException {
+        if (this.inputCalled == null) {
+            this.inputCalled = Boolean.TRUE;
+            return new ServletInputStreamImpl(this.exchangeRequest.getRequestBody());
+        }
+        throw new IllegalStateException("Cannot reopen input stream after " + (this.inputCalled ? "getInputStream()" : "getReader()") + " was called.");
+    }
+
+    @Override
+    public BufferedReader getReader() throws IOException {
+        if (this.inputCalled == null) {
+            this.inputCalled = Boolean.FALSE;
+            return new BufferedReader(new InputStreamReader(new ByteArrayInputStream(this.exchangeRequest.getRequestBody()), StandardCharsets.UTF_8));
+        }
+        throw new IllegalStateException("Cannot reopen input stream after " + (this.inputCalled ? "getInputStream()" : "getReader()") + " was called.");
+    }
+
+    // 请求头操作
+
+    @Override
+    public long getDateHeader(String name) {
+        return this.headers.getDateHeader(name);
+    }
+
+    @Override
+    public String getHeader(String name) {
+        return this.headers.getHeader(name);
+    }
+
+    @Override
+    public Enumeration<String> getHeaders(String name) {
+        List<String> hs = this.headers.getHeaders(name);
+        if (hs == null) {
+            return Collections.emptyEnumeration();
+        }
+        return Collections.enumeration(hs);
+    }
+
+    @Override
+    public Enumeration<String> getHeaderNames() {
+        return Collections.enumeration(this.headers.getHeaderNames());
+    }
+
+    @Override
+    public int getIntHeader(String name) {
+        return this.headers.getIntHeader(name);
+    }
+
+    // not implemented yet:
     @Override
     public Object getAttribute(String name) {
         // TODO Auto-generated method stub
@@ -102,11 +236,6 @@ public class HttpServletRequestImpl implements HttpServletRequest {
         return null;
     }
 
-    @Override
-    public ServletInputStream getInputStream() throws IOException {
-        // TODO Auto-generated method stub
-        return null;
-    }
 
     @Override
     public Enumeration<String> getParameterNames() {
@@ -150,11 +279,6 @@ public class HttpServletRequestImpl implements HttpServletRequest {
         return 0;
     }
 
-    @Override
-    public BufferedReader getReader() throws IOException {
-        // TODO Auto-generated method stub
-        return null;
-    }
 
     @Override
     public String getRemoteAddr() {
@@ -292,46 +416,7 @@ public class HttpServletRequestImpl implements HttpServletRequest {
         return null;
     }
 
-    @Override
-    public Cookie[] getCookies() {
-        // TODO Auto-generated method stub
-        return null;
-    }
 
-    @Override
-    public long getDateHeader(String name) {
-        // TODO Auto-generated method stub
-        return 0;
-    }
-
-    @Override
-    public String getHeader(String name) {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    @Override
-    public Enumeration<String> getHeaders(String name) {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    @Override
-    public Enumeration<String> getHeaderNames() {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    @Override
-    public int getIntHeader(String name) {
-        // TODO Auto-generated method stub
-        return 0;
-    }
-
-    @Override
-    public String getMethod() {
-        return exchangeRequest.getRequestMethod();
-    }
 
     @Override
     public String getPathInfo() {
@@ -381,11 +466,6 @@ public class HttpServletRequestImpl implements HttpServletRequest {
         return null;
     }
 
-    @Override
-    public String getRequestURI() {
-        return this.exchangeRequest.getRequestURI().getPath();
-    }
-
 
     @Override
     public StringBuffer getRequestURL() {
@@ -400,40 +480,11 @@ public class HttpServletRequestImpl implements HttpServletRequest {
     }
 
     @Override
-    public HttpSession getSession(boolean create) {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    @Override
-    public HttpSession getSession() {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    @Override
     public String changeSessionId() {
-        // TODO Auto-generated method stub
-        return null;
+        throw new UnsupportedOperationException("changeSessionId() is not supported.");
     }
 
-    @Override
-    public boolean isRequestedSessionIdValid() {
-        // TODO Auto-generated method stub
-        return false;
-    }
 
-    @Override
-    public boolean isRequestedSessionIdFromCookie() {
-        // TODO Auto-generated method stub
-        return false;
-    }
-
-    @Override
-    public boolean isRequestedSessionIdFromURL() {
-        // TODO Auto-generated method stub
-        return false;
-    }
 
     @Override
     public boolean authenticate(HttpServletResponse response) throws IOException, ServletException {

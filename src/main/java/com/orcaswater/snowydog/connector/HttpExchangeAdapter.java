@@ -20,13 +20,32 @@ import java.net.URI;
  */
 
 public class HttpExchangeAdapter implements HttpExchangeRequest, HttpExchangeResponse {
+
     final HttpExchange exchange;
-
     byte[] requestBodyData;
-
 
     public HttpExchangeAdapter(HttpExchange exchange) {
         this.exchange = exchange;
+    }
+
+    /**
+     * Copied from super class:
+     *
+     * If the response length parameter is greater than {@code zero}, this specifies
+     * an exact number of bytes to send and the application must send that exact
+     * amount of data. If the response length parameter is {@code zero}, then
+     * chunked transfer encoding is used and an arbitrary amount of data may be
+     * sent. The application terminates the response body by closing the
+     * {@link OutputStream}.
+     */
+    @Override
+    public void sendResponseHeaders(int rCode, long responseLength) throws IOException {
+        this.exchange.sendResponseHeaders(rCode, responseLength);
+    }
+
+    @Override
+    public OutputStream getResponseBody() {
+        return this.exchange.getResponseBody();
     }
 
     @Override
@@ -42,6 +61,11 @@ public class HttpExchangeAdapter implements HttpExchangeRequest, HttpExchangeRes
     @Override
     public Headers getRequestHeaders() {
         return this.exchange.getRequestHeaders();
+    }
+
+    @Override
+    public Headers getResponseHeaders() {
+        return this.exchange.getResponseHeaders();
     }
 
     @Override
@@ -62,20 +86,5 @@ public class HttpExchangeAdapter implements HttpExchangeRequest, HttpExchangeRes
             }
         }
         return this.requestBodyData;
-    }
-
-    @Override
-    public Headers getResponseHeaders() {
-        return this.exchange.getResponseHeaders();
-    }
-
-    @Override
-    public void sendResponseHeaders(int rCode, long responseLength) throws IOException {
-        this.exchange.sendResponseHeaders(rCode, responseLength);
-    }
-
-    @Override
-    public OutputStream getResponseBody() {
-        return this.exchange.getResponseBody();
     }
 }

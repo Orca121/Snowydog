@@ -20,6 +20,7 @@ import java.util.Set;
  * @version: 1.0
  */
 
+@Deprecated
 @WebFilter(urlPatterns = "/hello")
 public class HelloFilter implements Filter {
 

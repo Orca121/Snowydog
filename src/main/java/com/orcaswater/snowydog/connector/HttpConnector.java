@@ -5,6 +5,8 @@ import com.orcaswater.snowydog.engine.filter.LogFilter;
 import com.orcaswater.snowydog.engine.filter.HelloFilter;
 import com.orcaswater.snowydog.engine.servlet.HelloServlet;
 import com.orcaswater.snowydog.engine.servlet.IndexServlet;
+import com.orcaswater.snowydog.engine.servlet.LoginServlet;
+import com.orcaswater.snowydog.engine.servlet.LogoutServlet;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 import com.orcaswater.snowydog.engine.HttpServletRequestImpl;
@@ -45,9 +47,9 @@ public class HttpConnector implements HttpHandler, AutoCloseable {
         // 创建ServletContext:
         this.servletContext = new ServletContextImpl();
         // 初始化Servlet(目前还是硬编码加载Servlet):
-        this.servletContext.initServlets(List.of(IndexServlet.class, HelloServlet.class));
+        this.servletContext.initServlets(List.of(IndexServlet.class, LoginServlet.class, LogoutServlet.class));
         // 初始化Filter
-        this.servletContext.initFilters(List.of(LogFilter.class, HelloFilter.class));
+        this.servletContext.initFilters(List.of(LogFilter.class));
         // 开启服务器
         String host = "0.0.0.0";
         int port = 8080;
@@ -65,36 +67,20 @@ public class HttpConnector implements HttpHandler, AutoCloseable {
      */
     @Override
     public void handle(HttpExchange exchange) throws IOException {
-//        logger.info("{}: {}?{}", exchange.getRequestMethod(), exchange.getRequestURI().getPath(), exchange.getRequestURI().getRawQuery());
         var adapter = new HttpExchangeAdapter(exchange);
-        var request = new HttpServletRequestImpl(adapter);
         var response = new HttpServletResponseImpl(adapter);
+        // 创建Request时，需要引用servletContext和response:
+        var request = new HttpServletRequestImpl(this.servletContext, adapter, response);
         // process:
         try {
-//            process(request, response);
             this.servletContext.process(request, response);
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
+        }finally {
+            response.cleanup();
         }
     }
 
-    /**
-     * @param request:
-     * @param response:
-     * @return void
-     * @author: patri
-     * @description: 这个方法内部就可以按照Servlet标准来处理HTTP请求了，因为方法参数是标准的Servlet接口
-     * @createTime: 2024/5/7 11:30
-     */
-    @Deprecated
-    void process(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        String name = request.getParameter("name");
-        String html = "<h1>Hello, " + (name == null ? "world" : name) + ".</h1>";
-        response.setContentType("text/html");
-        PrintWriter pw = response.getWriter();
-        pw.write(html);
-        pw.close();
-    }
 
     @Override
     public void close() throws Exception {

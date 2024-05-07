@@ -5,30 +5,27 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 
 import java.io.IOException;
-import java.io.PrintWriter;
 
 /**
  * @projectName: snowydog
  * @package: com.orcaswater.snowydog.engine.servlet
- * @className: HelloServlet
+ * @className: LogoutServlet
  * @author: Orca121
- * @description: a demo servlet
- * @createTime: 2024-05-07 12:03
+ * @description: TODO
+ * @createTime: 2024-05-07 17:47
  * @version: 1.0
  */
 
-@Deprecated
-@WebServlet(urlPatterns = "/hello")
-public class HelloServlet extends HttpServlet {
+@WebServlet(urlPatterns = "/logout")
+public class LogoutServlet extends HttpServlet {
+
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        String name = req.getParameter("name");
-        String html = "<h1>Hello, " + (name == null ? "world" : name) + ".</h1>";
-        resp.setContentType("text/html");
-        PrintWriter pw = resp.getWriter();
-        pw.write(html);
-        pw.close();
+        HttpSession session = req.getSession();
+        session.invalidate();
+        resp.sendRedirect("/");
     }
 }

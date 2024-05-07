@@ -1,0 +1,32 @@
+package com.orcaswater.snowydog.engine.servlet;
+
+import jakarta.servlet.ServletException;
+import jakarta.servlet.annotation.WebServlet;
+import jakarta.servlet.http.HttpServlet;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+
+import java.io.IOException;
+import java.io.PrintWriter;
+
+/**
+ * @projectName: snowydog
+ * @package: com.orcaswater.snowydog.engine.servlet
+ * @className: IndexServlet
+ * @author: Orca121
+ * @description: a demo servlet
+ * @createTime: 2024-05-07 12:02
+ * @version: 1.0
+ */
+
+@WebServlet(urlPatterns = "/")
+public class IndexServlet extends HttpServlet {
+    @Override
+    protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        String html = "<h1>Index Page</h1>";
+        resp.setContentType("text/html");
+        PrintWriter pw = resp.getWriter();
+        pw.write(html);
+        pw.close();
+    }
+}

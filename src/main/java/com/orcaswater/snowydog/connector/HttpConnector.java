@@ -1,5 +1,8 @@
 package com.orcaswater.snowydog.connector;
 
+import com.orcaswater.snowydog.engine.ServletContextImpl;
+import com.orcaswater.snowydog.engine.servlet.HelloServlet;
+import com.orcaswater.snowydog.engine.servlet.IndexServlet;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 import com.orcaswater.snowydog.engine.HttpServletRequestImpl;
@@ -14,6 +17,7 @@ import org.slf4j.LoggerFactory;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.InetSocketAddress;
+import java.util.List;
 
 /**
  * @projectName: snowydog
@@ -28,14 +32,21 @@ import java.net.InetSocketAddress;
 public class HttpConnector implements HttpHandler, AutoCloseable {
     final Logger logger = LoggerFactory.getLogger(getClass());
 
+    // 持有ServletContext实例:
+    final ServletContextImpl servletContext;
     final HttpServer httpServer;
 
     public HttpConnector() throws IOException {
+        // 创建ServletContext:
+        this.servletContext = new ServletContextImpl();
+        // 初始化Servlet:
+        this.servletContext.initialize(List.of(IndexServlet.class, HelloServlet.class));
+
         String host = "0.0.0.0";
         int port = 8080;
         this.httpServer = HttpServer.create(new InetSocketAddress(host, port), 0, "/", this);
         this.httpServer.start();
-        logger.info("jerrymouse http server started at {}:{}...", host, port);
+        logger.info("snowydog http server started at {}:{}...", host, port);
     }
 
     /**
@@ -47,13 +58,14 @@ public class HttpConnector implements HttpHandler, AutoCloseable {
      */
     @Override
     public void handle(HttpExchange exchange) throws IOException {
-        logger.info("{}: {}?{}", exchange.getRequestMethod(), exchange.getRequestURI().getPath(), exchange.getRequestURI().getRawQuery());
+//        logger.info("{}: {}?{}", exchange.getRequestMethod(), exchange.getRequestURI().getPath(), exchange.getRequestURI().getRawQuery());
         var adapter = new HttpExchangeAdapter(exchange);
         var request = new HttpServletRequestImpl(adapter);
         var response = new HttpServletResponseImpl(adapter);
         // process:
         try {
-            process(request, response);
+//            process(request, response);
+            this.servletContext.process(request, response);
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
         }
@@ -67,6 +79,7 @@ public class HttpConnector implements HttpHandler, AutoCloseable {
      * @description: 这个方法内部就可以按照Servlet标准来处理HTTP请求了，因为方法参数是标准的Servlet接口
      * @createTime: 2024/5/7 11:30
      */
+    @Deprecated
     void process(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         String name = request.getParameter("name");
         String html = "<h1>Hello, " + (name == null ? "world" : name) + ".</h1>";

@@ -330,8 +330,7 @@ public class HttpServletRequestImpl implements HttpServletRequest {
 
     @Override
     public String getMethod() {
-        // TODO Auto-generated method stub
-        return null;
+        return exchangeRequest.getRequestMethod();
     }
 
     @Override
@@ -384,9 +383,9 @@ public class HttpServletRequestImpl implements HttpServletRequest {
 
     @Override
     public String getRequestURI() {
-        // TODO Auto-generated method stub
-        return null;
+        return this.exchangeRequest.getRequestURI().getPath();
     }
+
 
     @Override
     public StringBuffer getRequestURL() {

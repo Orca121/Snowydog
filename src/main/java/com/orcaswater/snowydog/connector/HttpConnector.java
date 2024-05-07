@@ -17,11 +17,20 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.slf4j.LoggerFactory;
+import com.orcaswater.snowydog.engine.listener.HelloHttpSessionAttributeListener;
+import com.orcaswater.snowydog.engine.listener.HelloHttpSessionListener;
+import com.orcaswater.snowydog.engine.listener.HelloServletContextListener;
+import com.orcaswater.snowydog.engine.listener.HelloServletContextAttributeListener;
+import com.orcaswater.snowydog.engine.listener.HelloServletRequestAttributeListener;
+import com.orcaswater.snowydog.engine.listener.HelloServletRequestListener;
+
 
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.InetSocketAddress;
 import java.time.Duration;
+import java.util.EventListener;
 import java.util.List;
 
 /**
@@ -50,6 +59,13 @@ public class HttpConnector implements HttpHandler, AutoCloseable {
         this.servletContext.initServlets(List.of(IndexServlet.class, LoginServlet.class, LogoutServlet.class));
         // 初始化Filter
         this.servletContext.initFilters(List.of(LogFilter.class));
+        // 初始化Listener
+        List<Class<? extends EventListener>> listenerClasses = List.of(HelloHttpSessionAttributeListener.class, HelloHttpSessionListener.class,
+                HelloServletContextAttributeListener.class, HelloServletContextListener.class, HelloServletRequestAttributeListener.class,
+                HelloServletRequestListener.class);
+        for (Class<? extends EventListener> listenerClass : listenerClasses) {
+            this.servletContext.addListener(listenerClass);
+        }
         // 开启服务器
         String host = "0.0.0.0";
         int port = 8080;

@@ -88,10 +88,11 @@ public class SessionManager implements Runnable {
     public HttpSession getSession(String sessionId) {
         HttpSessionImpl session = sessions.get(sessionId);
         if (session == null) {
-            logger.info("创建Session: "+ sessionId);
+//            logger.info("创建Session: "+ sessionId);
             // Session未找到，创建一个新的Session:
             session = new HttpSessionImpl(this.servletContext, sessionId, inactiveInterval);
             sessions.put(sessionId, session);
+            this.servletContext.invokeHttpSessionCreated(session);
         } else {
             // Session已存在，更新最后访问时间:
             session.lastAccessedTime = System.currentTimeMillis();
@@ -108,6 +109,7 @@ public class SessionManager implements Runnable {
      */
     public void remove(HttpSession session) {
         this.sessions.remove(session.getId());
+        this.servletContext.invokeHttpSessionDestroyed(session);
     }
 
 

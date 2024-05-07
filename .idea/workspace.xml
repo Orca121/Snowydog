@@ -4,19 +4,10 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="a488f7a6-f197-4563-8459-f464242d5f4e" name="Changes" comment="feat: step one - a simple http server">
-      <change afterPath="$PROJECT_DIR$/src/main/java/com/orcaswater/snowydog/Start.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/com/orcaswater/snowydog/connector/HttpConnector.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/com/orcaswater/snowydog/connector/HttpExchangeAdapter.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/com/orcaswater/snowydog/connector/HttpExchangeRequest.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/com/orcaswater/snowydog/connector/HttpExchangeResponse.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/com/orcaswater/snowydog/engine/HttpServletRequestImpl.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/com/orcaswater/snowydog/engine/HttpServletResponseImpl.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/.name" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.name" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/compiler.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/compiler.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/modules.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/pom.xml" afterDir="false" />
+    <list default="true" id="a488f7a6-f197-4563-8459-f464242d5f4e" name="Changes" comment="feat: step two - a simple servlet server">
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/orcaswater/snowydog/connector/HttpConnector.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/orcaswater/snowydog/connector/HttpConnector.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/orcaswater/snowydog/engine/HttpServletRequestImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/orcaswater/snowydog/engine/HttpServletRequestImpl.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/orcaswater/snowydog/engine/HttpServletResponseImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/orcaswater/snowydog/engine/HttpServletResponseImpl.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -216,7 +207,15 @@
       <option name="project" value="LOCAL" />
       <updated>1715006569100</updated>
     </task>
-    <option name="localTasksCounter" value="5" />
+    <task id="LOCAL-00005" summary="feat: step two - a simple servlet server">
+      <option name="closed" value="true" />
+      <created>1715052416660</created>
+      <option name="number" value="00005" />
+      <option name="presentableId" value="LOCAL-00005" />
+      <option name="project" value="LOCAL" />
+      <updated>1715052416660</updated>
+    </task>
+    <option name="localTasksCounter" value="6" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -232,7 +231,8 @@
   </component>
   <component name="VcsManagerConfiguration">
     <MESSAGE value="feat: step one - a simple http server" />
-    <option name="LAST_COMMIT_MESSAGE" value="feat: step one - a simple http server" />
+    <MESSAGE value="feat: step two - a simple servlet server" />
+    <option name="LAST_COMMIT_MESSAGE" value="feat: step two - a simple servlet server" />
   </component>
   <component name="XSLT-Support.FileAssociations.UIState">
     <expand />

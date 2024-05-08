@@ -166,7 +166,111 @@ public class Start {
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
         }
-        logger.info("snowydog http server was shutdown.");
+        logger.info("jerrymouse http server was shutdown.");
+    }
+
+    // return classes and lib path:
+    Path[] extractWarIfNecessary(Path warPath) throws IOException {
+        if (Files.isDirectory(warPath)) {
+            logger.info("war is directy: {}", warPath);
+            Path classesPath = warPath.resolve("WEB-INF/classes");
+            Path libPath = warPath.resolve("WEB-INF/lib");
+            Files.createDirectories(classesPath);
+            Files.createDirectories(libPath);
+            return new Path[] { classesPath, libPath };
+        }
+        Path extractPath = createExtractTo();
+        logger.info("extract '{}' to '{}'", warPath, extractPath);
+        JarFile war = new JarFile(warPath.toFile());
+        war.stream().sorted((e1, e2) -> e1.getName().compareTo(e2.getName())).forEach(entry -> {
+            if (!entry.isDirectory()) {
+                Path file = extractPath.resolve(entry.getName());
+                Path dir = file.getParent();
+                if (!Files.isDirectory(dir)) {
+                    try {
+                        Files.createDirectories(dir);
+                    } catch (IOException e) {
+                        throw new UncheckedIOException(e);
+                    }
+                }
+                try (InputStream in = war.getInputStream(entry)) {
+                    Files.copy(in, file);
+                } catch (IOException e) {
+                    throw new UncheckedIOException(e);
+                }
+            }
+        });
+        // check WEB-INF/classes and WEB-INF/lib:
+        Path classesPath = extractPath.resolve("WEB-INF/classes");
+        Path libPath = extractPath.resolve("WEB-INF/lib");
+        Files.createDirectories(classesPath);
+        Files.createDirectories(libPath);
+        return new Path[] { classesPath, libPath };
+    }
+
+    Path parseWarFile(String warFile) {
+        Path warPath = Path.of(warFile).toAbsolutePath().normalize();
+        if (!Files.isRegularFile(warPath) && !Files.isDirectory(warPath)) {
+            System.err.printf("war file '%s' was not found.\n", warFile);
+            System.exit(1);
+        }
+        return warPath;
+    }
+
+    Path createExtractTo() throws IOException {
+        Path tmp = Files.createTempDirectory("_jm_");
+        Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+            try {
+                deleteDir(tmp);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }));
+        return tmp;
+    }
+
+    void deleteDir(Path p) throws IOException {
+        Files.list(p).forEach(c -> {
+            try {
+                if (Files.isDirectory(c)) {
+                    deleteDir(c);
+                } else {
+                    Files.delete(c);
+                }
+            } catch (IOException e) {
+                throw new UncheckedIOException(e);
+            }
+        });
+        Files.delete(p);
+    }
+
+    Config loadConfig(String config) throws JacksonException {
+        var objectMapper = new ObjectMapper(new YAMLFactory()).setPropertyNamingStrategy(PropertyNamingStrategies.KEBAB_CASE)
+                .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+        return objectMapper.readValue(config, Config.class);
+    }
+
+    static void merge(Object source, Object override) throws ReflectiveOperationException {
+        for (Field field : source.getClass().getFields()) {
+            Object overrideFieldValue = field.get(override);
+            if (overrideFieldValue != null) {
+                Class<?> type = field.getType();
+                if (type == String.class || type.isPrimitive() || Number.class.isAssignableFrom(type)) {
+                    // source.xyz = override.xyz:
+                    field.set(source, overrideFieldValue);
+                } else if (Map.class.isAssignableFrom(type)) {
+                    // source.map.putAll(override.map):
+                    @SuppressWarnings("unchecked")
+                    Map<String, String> sourceMap = (Map<String, String>) field.get(source);
+                    @SuppressWarnings("unchecked")
+                    Map<String, String> overrideMap = (Map<String, String>) overrideFieldValue;
+                    sourceMap.putAll(overrideMap);
+                } else {
+                    // merge(source.xyz, override.xyz):
+                    merge(field.get(source), overrideFieldValue);
+                }
+            }
+        }
     }
 
     // return classes and lib path:

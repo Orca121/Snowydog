@@ -19,7 +19,7 @@ import java.io.PrintWriter;
  * @createTime: 2024-05-07 12:02
  * @version: 1.0
  */
-
+@Deprecated
 @WebServlet(urlPatterns = "/")
 public class IndexServlet extends HttpServlet {
     @Override

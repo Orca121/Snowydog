@@ -58,8 +58,6 @@ public class HttpExchangeAdapter implements HttpExchangeRequest, HttpExchangeRes
         return this.exchange.getRequestURI();
     }
 
-
-
     @Override
     public Headers getRequestHeaders() {
         return this.exchange.getRequestHeaders();

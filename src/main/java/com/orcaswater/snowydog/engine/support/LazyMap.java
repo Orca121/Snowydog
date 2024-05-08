@@ -8,14 +8,16 @@ import java.util.concurrent.ConcurrentHashMap;
  * @package: com.orcaswater.snowydog.engine.support
  * @className: LazyMap
  * @author: Orca121
- * @description: Lazy Proxy which holds a map
+ * @description: Map的包装类，它实现了延迟初始化的功能。实际的Map对象直到第一次需要时才会被创建。
  * @createTime: 2024-05-07 16:45
  * @version: 1.0
  */
 
 public class LazyMap<V> {
 
+    // 被包装的类
     private Map<String, V> map = null;
+    // 如果为 true，则使用 ConcurrentHashMap；如果为 false，则使用 HashMap。
     private final boolean concurrent;
 
     public LazyMap(boolean concurrent) {
@@ -36,6 +38,7 @@ public class LazyMap<V> {
         return this.map.keySet();
     }
 
+    //返回映射中所有键的枚举。如果映射尚未初始化，返回一个空的枚举。
     protected Enumeration<String> keyEnumeration() {
         if (this.map == null) {
             return Collections.emptyEnumeration();
@@ -64,6 +67,7 @@ public class LazyMap<V> {
         return null;
     }
 
+    // 返回映射对象的只读视图。如果映射尚未初始化，返回一个空的映射。
     protected Map<String, V> map() {
         if (this.map == null) {
             return Map.of();

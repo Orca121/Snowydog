@@ -17,6 +17,7 @@ import java.io.IOException;
  * @createTime: 2024-05-07 16:36
  * @version: 1.0
  */
+@Deprecated
 @WebFilter(urlPatterns = "/*")
 public class LogFilter implements Filter {
 

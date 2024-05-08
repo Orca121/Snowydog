@@ -5,7 +5,7 @@
 - 仅支持挂载到`/`的一个Context，不支持多个Host与多个Context。
 - 基于Servlet 6.0规范
 
-因为只有一个Context，所以也只能有一个Web App。Jerrymouse Server的架构如下：
+因为只有一个Context，所以也只能有一个Web App。Snowydog Server的架构如下：
 
 ```ascii
   ┌───────────────────────────────┐

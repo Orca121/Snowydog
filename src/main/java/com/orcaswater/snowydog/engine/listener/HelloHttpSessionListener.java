@@ -15,7 +15,7 @@ import org.slf4j.LoggerFactory;
  * @createTime: 2024-05-07 22:13
  * @version: 1.0
  */
-
+@Deprecated
 @WebListener
 public class HelloHttpSessionListener implements HttpSessionListener {
 

@@ -1,5 +1,6 @@
 package com.orcaswater.snowydog.engine;
 
+import com.orcaswater.snowydog.Config;
 import com.orcaswater.snowydog.connector.HttpExchangeResponse;
 import com.orcaswater.snowydog.engine.support.HttpHeaders;
 import com.sun.net.httpserver.Headers;
@@ -25,6 +26,7 @@ import java.util.*;
 
 public class HttpServletResponseImpl implements HttpServletResponse {
 
+    final Config config;
     final HttpExchangeResponse exchangeResponse;
     final HttpHeaders headers;
 
@@ -35,15 +37,25 @@ public class HttpServletResponseImpl implements HttpServletResponse {
     PrintWriter writer;
 
     String contentType;
+    String characterEncoding;
     long contentLength = 0;
+    Locale locale = null;
     List<Cookie> cookies = null;
     boolean committed = false;
 
-    public HttpServletResponseImpl(HttpExchangeResponse exchangeResponse) {
+    public HttpServletResponseImpl(Config config, HttpExchangeResponse exchangeResponse) {
+        this.config = config;
         this.exchangeResponse = exchangeResponse;
         this.headers = new HttpHeaders(exchangeResponse.getResponseHeaders());
+        this.characterEncoding = config.server.responseEncoding;
         this.setContentType("text/html");
     }
+
+    @Override
+    public String getCharacterEncoding() {
+        return this.characterEncoding;
+    }
+
 
     @Override
     public String getContentType() {
@@ -52,6 +64,7 @@ public class HttpServletResponseImpl implements HttpServletResponse {
 
     @Override
     public ServletOutputStream getOutputStream() throws IOException {
+        // 确保只能打开一次，符合Servlet规范
         if (callOutput == null) {
             commitHeaders(0);
             this.output = new ServletOutputStreamImpl(this.exchangeResponse.getResponseBody());
@@ -78,6 +91,12 @@ public class HttpServletResponseImpl implements HttpServletResponse {
         throw new IllegalStateException("Cannot open writer when output stream is opened.");
     }
 
+
+    @Override
+    public void setCharacterEncoding(String charset) {
+        this.characterEncoding = charset;
+    }
+
     @Override
     public void setContentLength(int len) {
         this.contentLength = len;
@@ -91,7 +110,11 @@ public class HttpServletResponseImpl implements HttpServletResponse {
     @Override
     public void setContentType(String type) {
         this.contentType = type;
-        setHeader("Content-Type", contentType);
+        if (type.startsWith("text/")) {
+            setHeader("Content-Type", contentType + "; charset=" + this.characterEncoding);
+        } else {
+            setHeader("Content-Type", contentType);
+        }
     }
 
     @Override
@@ -140,12 +163,34 @@ public class HttpServletResponseImpl implements HttpServletResponse {
     }
 
     @Override
+    public void setLocale(Locale locale) {
+        checkNotCommitted();
+        this.locale = locale;
+    }
+
+    @Override
+    public Locale getLocale() {
+        return this.locale == null ? Locale.getDefault() : this.locale;
+    }
+
+    @Override
     public void addCookie(Cookie cookie) {
         checkNotCommitted();
         if (this.cookies == null) {
             this.cookies = new ArrayList<>();
         }
         this.cookies.add(cookie);
+    }
+
+    public String encodeURL(String url) {
+        // no need to append session id:
+        return url;
+    }
+
+    @Override
+    public String encodeRedirectURL(String url) {
+        // no need to append session id:
+        return url;
     }
 
     @Override
@@ -256,44 +301,13 @@ public class HttpServletResponseImpl implements HttpServletResponse {
         }
     }
 
-    // check if not committed:
+    // 检查响应是否被发送到客户端：
     void checkNotCommitted() {
         if (this.committed) {
             throw new IllegalStateException("Response is committed.");
         }
     }
 
-    @Override
-    public String getCharacterEncoding() {
-        // TODO Auto-generated method stub
-        return null;
-    }
 
-    @Override
-    public void setCharacterEncoding(String charset) {
-        // TODO Auto-generated method stub
-    }
 
-    @Override
-    public void setLocale(Locale loc) {
-        // TODO Auto-generated method stub
-    }
-
-    @Override
-    public Locale getLocale() {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    @Override
-    public String encodeURL(String url) {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    @Override
-    public String encodeRedirectURL(String url) {
-        // TODO Auto-generated method stub
-        return null;
-    }
 }

@@ -1,5 +1,6 @@
 package com.orcaswater.snowydog.connector;
 
+import com.orcaswater.snowydog.Config;
 import com.orcaswater.snowydog.engine.ServletContextImpl;
 import com.orcaswater.snowydog.engine.filter.LogFilter;
 import com.orcaswater.snowydog.engine.filter.HelloFilter;
@@ -32,6 +33,7 @@ import java.net.InetSocketAddress;
 import java.time.Duration;
 import java.util.EventListener;
 import java.util.List;
+import java.util.concurrent.Executor;
 
 /**
  * @projectName: snowydog
@@ -46,32 +48,33 @@ import java.util.List;
 public class HttpConnector implements HttpHandler, AutoCloseable {
     final Logger logger = LoggerFactory.getLogger(getClass());
 
-    // 持有ServletContext实例:
+    final Config config;
+    final ClassLoader classLoader;
     final ServletContextImpl servletContext;
     final HttpServer httpServer;
-
     final Duration stopDelay = Duration.ofSeconds(5);
 
-    public HttpConnector() throws IOException {
+
+    public HttpConnector(Config config, String webRoot, Executor executor, ClassLoader classLoader, List<Class<?>> autoScannedClasses) throws IOException {
+        logger.info("starting snowydog http server at {}:{}...", config.server.host, config.server.port);
+        this.config = config;
+        // 创建类加载器
+        this.classLoader = classLoader;
+
+        // 创建上下文类加载器
+        Thread.currentThread().setContextClassLoader(this.classLoader);
         // 创建ServletContext:
-        this.servletContext = new ServletContextImpl();
-        // 初始化Servlet(目前还是硬编码加载Servlet):
-        this.servletContext.initServlets(List.of(IndexServlet.class, LoginServlet.class, LogoutServlet.class));
-        // 初始化Filter
-        this.servletContext.initFilters(List.of(LogFilter.class));
-        // 初始化Listener
-        List<Class<? extends EventListener>> listenerClasses = List.of(HelloHttpSessionAttributeListener.class, HelloHttpSessionListener.class,
-                HelloServletContextAttributeListener.class, HelloServletContextListener.class, HelloServletRequestAttributeListener.class,
-                HelloServletRequestListener.class);
-        for (Class<? extends EventListener> listenerClass : listenerClasses) {
-            this.servletContext.addListener(listenerClass);
-        }
+        ServletContextImpl ctx = new ServletContextImpl(classLoader, config, webRoot);
+        ctx.initialize(autoScannedClasses);
+        this.servletContext = ctx;
+        // 恢复默认的线程的上下文类加载器:
+        Thread.currentThread().setContextClassLoader(null);
+
         // 开启服务器
-        String host = "0.0.0.0";
-        int port = 8080;
-        this.httpServer = HttpServer.create(new InetSocketAddress(host, port), 0, "/", this);
+        this.httpServer = HttpServer.create(new InetSocketAddress(config.server.host, config.server.port), config.server.backlog, "/", this);
+        this.httpServer.setExecutor(executor);
         this.httpServer.start();
-        logger.info("snowydog http server started at {}:{}...", host, port);
+        logger.info("snowydog http server started at {}:{}...", config.server.host, config.server.port);
     }
 
     /**
@@ -84,22 +87,27 @@ public class HttpConnector implements HttpHandler, AutoCloseable {
     @Override
     public void handle(HttpExchange exchange) throws IOException {
         var adapter = new HttpExchangeAdapter(exchange);
-        var response = new HttpServletResponseImpl(adapter);
+        var response = new HttpServletResponseImpl(this.config, adapter);
         // 创建Request时，需要引用servletContext和response:
-        var request = new HttpServletRequestImpl(this.servletContext, adapter, response);
+        var request = new HttpServletRequestImpl(this.config, this.servletContext, adapter, response);
         // process:
         try {
+            Thread.currentThread().setContextClassLoader(this.classLoader);
             this.servletContext.process(request, response);
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
-        }finally {
+        } finally {
+            // 恢复默认的线程的上下文类加载器:
+            Thread.currentThread().setContextClassLoader(null);
+            // 如果发现没有发送Header，则需要立刻发送Header，否则浏览器无法收到响应。
             response.cleanup();
         }
     }
 
 
     @Override
-    public void close() throws Exception {
+    public void close() {
+        this.servletContext.destroy();
         this.httpServer.stop((int) this.stopDelay.toSeconds());
     }
 }

@@ -4,22 +4,39 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="a488f7a6-f197-4563-8459-f464242d5f4e" name="Changes" comment="feat: step four - filter chain support">
-      <change afterPath="$PROJECT_DIR$/src/main/java/com/orcaswater/snowydog/engine/listener/HelloHttpSessionAttributeListener.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/com/orcaswater/snowydog/engine/listener/HelloHttpSessionListener.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/com/orcaswater/snowydog/engine/listener/HelloServletContextAttributeListener.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/com/orcaswater/snowydog/engine/listener/HelloServletContextListener.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/com/orcaswater/snowydog/engine/listener/HelloServletRequestAttributeListener.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/com/orcaswater/snowydog/engine/listener/HelloServletRequestListener.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
+    <list default="true" id="a488f7a6-f197-4563-8459-f464242d5f4e" name="Changes" comment="feat: step six - listener support">
+      <change afterPath="$PROJECT_DIR$/src/main/java/com/orcaswater/snowydog/Config.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/com/orcaswater/snowydog/classloader/Resource.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/com/orcaswater/snowydog/classloader/WebAppClassLoader.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/com/orcaswater/snowydog/engine/SessionCookieConfigImpl.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/com/orcaswater/snowydog/engine/servlet/DefaultServlet.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/com/orcaswater/snowydog/utils/ClassPathUtils.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/com/orcaswater/snowydog/utils/HtmlUtils.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/com/orcaswater/snowydog/utils/UrlUtils.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/pom.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/orcaswater/snowydog/Start.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/orcaswater/snowydog/Start.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/com/orcaswater/snowydog/connector/HttpConnector.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/orcaswater/snowydog/connector/HttpConnector.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/com/orcaswater/snowydog/connector/HttpExchangeAdapter.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/orcaswater/snowydog/connector/HttpExchangeAdapter.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/com/orcaswater/snowydog/engine/HttpServletRequestImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/orcaswater/snowydog/engine/HttpServletRequestImpl.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/orcaswater/snowydog/engine/HttpServletResponseImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/orcaswater/snowydog/engine/HttpServletResponseImpl.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/com/orcaswater/snowydog/engine/HttpSessionImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/orcaswater/snowydog/engine/HttpSessionImpl.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/com/orcaswater/snowydog/engine/ServletContextImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/orcaswater/snowydog/engine/ServletContextImpl.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/orcaswater/snowydog/engine/ServletRegistrationImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/orcaswater/snowydog/engine/ServletRegistrationImpl.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/com/orcaswater/snowydog/engine/SessionManager.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/orcaswater/snowydog/engine/SessionManager.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/orcaswater/snowydog/engine/filter/LogFilter.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/orcaswater/snowydog/engine/filter/LogFilter.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/orcaswater/snowydog/engine/listener/HelloHttpSessionAttributeListener.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/orcaswater/snowydog/engine/listener/HelloHttpSessionAttributeListener.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/orcaswater/snowydog/engine/listener/HelloHttpSessionListener.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/orcaswater/snowydog/engine/listener/HelloHttpSessionListener.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/orcaswater/snowydog/engine/listener/HelloServletContextAttributeListener.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/orcaswater/snowydog/engine/listener/HelloServletContextAttributeListener.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/orcaswater/snowydog/engine/listener/HelloServletContextListener.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/orcaswater/snowydog/engine/listener/HelloServletContextListener.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/orcaswater/snowydog/engine/listener/HelloServletRequestAttributeListener.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/orcaswater/snowydog/engine/listener/HelloServletRequestAttributeListener.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/orcaswater/snowydog/engine/listener/HelloServletRequestListener.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/orcaswater/snowydog/engine/listener/HelloServletRequestListener.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/orcaswater/snowydog/engine/mapping/AbstractMapping.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/orcaswater/snowydog/engine/mapping/AbstractMapping.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/orcaswater/snowydog/engine/mapping/FilterMapping.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/orcaswater/snowydog/engine/mapping/FilterMapping.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/orcaswater/snowydog/engine/servlet/IndexServlet.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/orcaswater/snowydog/engine/servlet/IndexServlet.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/orcaswater/snowydog/engine/servlet/LoginServlet.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/orcaswater/snowydog/engine/servlet/LoginServlet.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/orcaswater/snowydog/engine/servlet/LogoutServlet.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/orcaswater/snowydog/engine/servlet/LogoutServlet.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/orcaswater/snowydog/engine/support/LazyMap.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/orcaswater/snowydog/engine/support/LazyMap.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/orcaswater/snowydog/utils/HttpUtils.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/orcaswater/snowydog/utils/HttpUtils.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -30,6 +47,7 @@
     <option name="RECENT_TEMPLATES">
       <list>
         <option value="Interface" />
+        <option value="Record" />
         <option value="Class" />
       </list>
     </option>
@@ -70,29 +88,30 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;ASKED_SHARE_PROJECT_CONFIGURATION_FILES&quot;: &quot;true&quot;,
-    &quot;Downloaded.Files.Path.Enabled&quot;: &quot;false&quot;,
-    &quot;Repository.Attach.Annotations&quot;: &quot;false&quot;,
-    &quot;Repository.Attach.JavaDocs&quot;: &quot;false&quot;,
-    &quot;Repository.Attach.Sources&quot;: &quot;false&quot;,
-    &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;dev&quot;,
-    &quot;jdk.selected.JAVA_MODULE&quot;: &quot;openjdk-21&quot;,
-    &quot;last_opened_file_path&quot;: &quot;D:/Code/Project/Snowydog/src/main/java/com/orcaswater/snowydog/engine/mapping&quot;,
-    &quot;project.structure.last.edited&quot;: &quot;Facets&quot;,
-    &quot;project.structure.proportion&quot;: &quot;0.15&quot;,
-    &quot;project.structure.side.proportion&quot;: &quot;0.2&quot;,
-    &quot;settings.editor.selected.configurable&quot;: &quot;preferences.lookFeel&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "ASKED_SHARE_PROJECT_CONFIGURATION_FILES": "true",
+    "Downloaded.Files.Path.Enabled": "false",
+    "Repository.Attach.Annotations": "false",
+    "Repository.Attach.JavaDocs": "false",
+    "Repository.Attach.Sources": "false",
+    "RunOnceActivity.OpenProjectViewOnStart": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "git-widget-placeholder": "dev",
+    "jdk.selected.JAVA_MODULE": "openjdk-21",
+    "last_opened_file_path": "D:/Code/Project/Snowydog/src/main/java/com/orcaswater/snowydog/engine/mapping",
+    "project.structure.last.edited": "Facets",
+    "project.structure.proportion": "0.15",
+    "project.structure.side.proportion": "0.2",
+    "settings.editor.selected.configurable": "editing.templates"
   }
-}</component>
+}]]></component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
       <recent name="D:\Code\Project\Snowydog\src\main\java\com\orcaswater\snowydog\engine\mapping" />
     </key>
     <key name="MoveFile.RECENT_KEYS">
+      <recent name="D:\Code\Project\Snowydog\src\test" />
       <recent name="D:\Code\Project\Snowydog" />
     </key>
     <key name="CreateTestDialog.Recents.Supers">
@@ -262,7 +281,15 @@
       <option name="project" value="LOCAL" />
       <updated>1715074838901</updated>
     </task>
-    <option name="localTasksCounter" value="10" />
+    <task id="LOCAL-00010" summary="feat: step six - listener support">
+      <option name="closed" value="true" />
+      <created>1715093727354</created>
+      <option name="number" value="00010" />
+      <option name="presentableId" value="LOCAL-00010" />
+      <option name="project" value="LOCAL" />
+      <updated>1715093727354</updated>
+    </task>
+    <option name="localTasksCounter" value="11" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -281,7 +308,8 @@
     <MESSAGE value="feat: step two - a simple servlet server" />
     <MESSAGE value="feat: step three - servlet context support" />
     <MESSAGE value="feat: step four - filter chain support" />
-    <option name="LAST_COMMIT_MESSAGE" value="feat: step four - filter chain support" />
+    <MESSAGE value="feat: step six - listener support" />
+    <option name="LAST_COMMIT_MESSAGE" value="feat: step six - listener support" />
   </component>
   <component name="XSLT-Support.FileAssociations.UIState">
     <expand />

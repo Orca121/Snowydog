@@ -18,7 +18,7 @@ import java.io.IOException;
  * @createTime: 2024-05-07 17:47
  * @version: 1.0
  */
-
+@Deprecated
 @WebServlet(urlPatterns = "/logout")
 public class LogoutServlet extends HttpServlet {
 

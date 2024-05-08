@@ -1,5 +1,6 @@
 package com.orcaswater.snowydog.engine;
 
+import com.orcaswater.snowydog.Config;
 import com.orcaswater.snowydog.connector.HttpExchangeRequest;
 import com.orcaswater.snowydog.engine.support.Attributes;
 import com.orcaswater.snowydog.engine.support.HttpHeaders;
@@ -25,6 +26,7 @@ import java.util.*;
 
 public class HttpServletRequestImpl implements HttpServletRequest {
 
+    final Config config;
     final ServletContextImpl servletContext;
     final HttpExchangeRequest exchangeRequest;
     final HttpServletResponse response;
@@ -40,15 +42,18 @@ public class HttpServletRequestImpl implements HttpServletRequest {
 
     Boolean inputCalled = null;
 
-    public HttpServletRequestImpl(ServletContextImpl servletContext, HttpExchangeRequest exchangeRequest, HttpServletResponse response) {
+    public HttpServletRequestImpl(Config config, ServletContextImpl servletContext, HttpExchangeRequest exchangeRequest, HttpServletResponse response) {
+        this.config = config;
         this.servletContext = servletContext;
         this.exchangeRequest = exchangeRequest;
         this.response = response;
 
-        this.characterEncoding = "UTF-8";
+        this.characterEncoding = config.server.requestEncoding;
         this.method = exchangeRequest.getRequestMethod();
         this.headers = new HttpHeaders(exchangeRequest.getRequestHeaders());
         this.parameters = new Parameters(exchangeRequest, this.characterEncoding);
+
+        //  处理长度问题
         if ("POST".equals(this.method) || "PUT".equals(this.method) || "DELETE".equals(this.method) || "PATCH".equals(this.method)) {
             this.contentLength = getIntHeader("Content-Length");
         }
@@ -58,6 +63,8 @@ public class HttpServletRequestImpl implements HttpServletRequest {
     public String getCharacterEncoding() {
         return this.characterEncoding;
     }
+
+
 
     @Override
     public void setCharacterEncoding(String env) throws UnsupportedEncodingException {
@@ -80,6 +87,7 @@ public class HttpServletRequestImpl implements HttpServletRequest {
         return getHeader("Content-Type");
     }
 
+    // 确保请求正文的输入流只能被读取一次
     @Override
     public ServletInputStream getInputStream() throws IOException {
         if (this.inputCalled == null) {
@@ -125,12 +133,32 @@ public class HttpServletRequestImpl implements HttpServletRequest {
 
     @Override
     public String getScheme() {
-        return "http";
+        String header = "http";
+        String forwarded = config.server.forwardedHeaders.forwardedProto;
+        if (!forwarded.isEmpty()) {
+            String forwardedHeader = getHeader(forwarded);
+            if (forwardedHeader != null) {
+                header = forwardedHeader;
+            }
+        }
+        return header;
     }
 
     @Override
     public String getServerName() {
-        return "localhost";
+        String header = getHeader("Host");
+        String forwarded = config.server.forwardedHeaders.forwardedHost;
+        if (!forwarded.isEmpty()) {
+            String forwardedHeader = getHeader(forwarded);
+            if (forwardedHeader != null) {
+                header = forwardedHeader;
+            }
+        }
+        if (header == null) {
+            InetSocketAddress address = this.exchangeRequest.getLocalAddress();
+            header = address.getHostString();
+        }
+        return header;
     }
 
     @Override
@@ -141,17 +169,25 @@ public class HttpServletRequestImpl implements HttpServletRequest {
 
     @Override
     public Locale getLocale() {
-        return Locale.CHINA;
+        String langs = getHeader("Accept-Language");
+        if (langs == null) {
+            return HttpUtils.DEFAULT_LOCALE;
+        }
+        return HttpUtils.parseLocales(langs).get(0);
     }
 
     @Override
     public Enumeration<Locale> getLocales() {
-        return Collections.enumeration(List.of(Locale.CHINA, Locale.US));
+        String langs = getHeader("Accept-Language");
+        if (langs == null) {
+            return Collections.enumeration(HttpUtils.DEFAULT_LOCALES);
+        }
+        return Collections.enumeration(HttpUtils.parseLocales(langs));
     }
 
     @Override
     public boolean isSecure() {
-        return false;
+        return "https".equals(getScheme().toLowerCase());
     }
 
     @Override
@@ -469,7 +505,7 @@ public class HttpServletRequestImpl implements HttpServletRequest {
 
     @Override
     public String getLocalName() {
-        // avoid DNS lookup:
+        // 避免DNS查询:
         return getLocalAddr();
     }
 

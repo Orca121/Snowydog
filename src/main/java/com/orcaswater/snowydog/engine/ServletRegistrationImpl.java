@@ -1,5 +1,6 @@
 package com.orcaswater.snowydog.engine;
 
+import com.orcaswater.snowydog.engine.support.InitParameters;
 import jakarta.servlet.*;
 
 import java.util.*;
@@ -20,6 +21,7 @@ public class ServletRegistrationImpl implements ServletRegistration.Dynamic {
     final String name;
     final Servlet servlet;
     final List<String> urlPatterns = new ArrayList<>(4);
+    final InitParameters initParameters = new InitParameters();
 
     boolean initialized = false;
 
@@ -28,6 +30,7 @@ public class ServletRegistrationImpl implements ServletRegistration.Dynamic {
         this.name = name;
         this.servlet = servlet;
     }
+
 
     public ServletConfig getServletConfig() {
         return new ServletConfig() {
@@ -43,12 +46,12 @@ public class ServletRegistrationImpl implements ServletRegistration.Dynamic {
 
             @Override
             public String getInitParameter(String name) {
-                return null;
+                return ServletRegistrationImpl.this.initParameters.getInitParameter(name);
             }
 
             @Override
             public Enumeration<String> getInitParameterNames() {
-                return null;
+                return ServletRegistrationImpl.this.initParameters.getInitParameterNames();
             }
         };
     }
@@ -61,6 +64,28 @@ public class ServletRegistrationImpl implements ServletRegistration.Dynamic {
     @Override
     public String getClassName() {
         return servlet.getClass().getName();
+    }
+
+    @Override
+    public boolean setInitParameter(String name, String value) {
+        checkNotInitialized("setInitParameter");
+        return this.initParameters.setInitParameter(name, value);
+    }
+
+    @Override
+    public String getInitParameter(String name) {
+        return this.initParameters.getInitParameter(name);
+    }
+
+    @Override
+    public Set<String> setInitParameters(Map<String, String> initParameters) {
+        checkNotInitialized("setInitParameter");
+        return this.initParameters.setInitParameters(initParameters);
+    }
+
+    @Override
+    public Map<String, String> getInitParameters() {
+        return this.initParameters.getInitParameters();
     }
 
     @Override
@@ -81,57 +106,46 @@ public class ServletRegistrationImpl implements ServletRegistration.Dynamic {
 
     @Override
     public String getRunAsRole() {
-        // TODO Auto-generated method stub
         return null;
     }
 
+
     @Override
     public void setAsyncSupported(boolean isAsyncSupported) {
-        // TODO Auto-generated method stub
-    }
+        checkNotInitialized("setAsyncSupported");
+        if (isAsyncSupported) {
+            throw new UnsupportedOperationException("Async is not supported.");
+        }    }
 
     @Override
     public void setLoadOnStartup(int loadOnStartup) {
-        // TODO Auto-generated method stub
+        checkNotInitialized("setLoadOnStartup");
+        // do nothing
     }
 
     @Override
     public Set<String> setServletSecurity(ServletSecurityElement constraint) {
-        // TODO Auto-generated method stub
-        return null;
+        checkNotInitialized("setServletSecurity");
+        throw new UnsupportedOperationException("Servlet security is not supported.");
     }
 
     @Override
     public void setMultipartConfig(MultipartConfigElement multipartConfig) {
-        // TODO Auto-generated method stub
+        checkNotInitialized("setMultipartConfig");
+        throw new UnsupportedOperationException("Multipart config is not supported.");
     }
 
     @Override
     public void setRunAsRole(String roleName) {
-        // TODO Auto-generated method stub
+        checkNotInitialized("setRunAsRole");
+        if (roleName != null) {
+            throw new UnsupportedOperationException("Role is not supported.");
+        }
     }
 
-    @Override
-    public boolean setInitParameter(String name, String value) {
-        // TODO Auto-generated method stub
-        return false;
-    }
-
-    @Override
-    public String getInitParameter(String name) {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    @Override
-    public Set<String> setInitParameters(Map<String, String> initParameters) {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    @Override
-    public Map<String, String> getInitParameters() {
-        // TODO Auto-generated method stub
-        return null;
+    private void checkNotInitialized(String name) {
+        if (this.initialized) {
+            throw new IllegalStateException("Cannot call " + name + " after initialization.");
+        }
     }
 }

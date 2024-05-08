@@ -20,7 +20,7 @@ import java.util.Map;
  * @createTime: 2024-05-07 17:47
  * @version: 1.0
  */
-
+@Deprecated
 @WebServlet(urlPatterns = "/login")
 public class LoginServlet extends HttpServlet {
 

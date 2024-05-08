@@ -122,4 +122,9 @@ public class HttpSessionImpl implements HttpSession {
             throw new IllegalStateException("Session is already invalidated.");
         }
     }
+
+    @Override
+    public String toString() {
+        return String.format("HttpSessionImpl@%s[id=%s]", Integer.toHexString(hashCode()), this.getId());
+    }
 }

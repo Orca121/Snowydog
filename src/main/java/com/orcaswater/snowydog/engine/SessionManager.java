@@ -71,7 +71,8 @@ public class SessionManager implements Runnable {
                 // 判断是否过期:
                 if (session.getLastAccessedTime() + session.getMaxInactiveInterval() * 1000L < now) {
                     // 删除过期的Session:
-                    logger.warn("remove expired session: {}, last access time: {}", sessionId, DateUtils.formatDateTimeGMT(session.getLastAccessedTime()));
+                    logger.atDebug().log("remove expired session: {}, last access time: {}", sessionId,
+                            DateUtils.formatDateTimeGMT(session.getLastAccessedTime()));
                     session.invalidate();
                 }
             }

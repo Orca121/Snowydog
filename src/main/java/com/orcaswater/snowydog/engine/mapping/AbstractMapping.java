@@ -53,6 +53,7 @@ public class AbstractMapping implements Comparable<AbstractMapping> {
 
     @Override
     public int compareTo(AbstractMapping o) {
+        // cmp是compare的缩写
         int cmp = this.priority() - o.priority();
         if (cmp == 0) {
             cmp = this.url.compareTo(o.url);
